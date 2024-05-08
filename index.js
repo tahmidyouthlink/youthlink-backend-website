@@ -82,7 +82,8 @@ async function run() {
             res.send(result);
         })
 
-        // view recent job posts
+        // view recent job posts 
+        
         app.get("/allJobCircular", async (req, res) => {
             const result = await availableJobCollection.find().toArray();
             res.send(result);

@@ -8,7 +8,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.glcj3l3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.n9or6wr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
     serverApi: {
@@ -46,6 +46,28 @@ async function run() {
             res.send(result);
         })
 
+        // get single work info
+        app.get("/allWork/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await workCollection.findOne(query);
+            res.send(result);
+        })
+
+        // edit a single work
+        app.patch("allWork/:id", async(req, res) => {
+            const id = req.params.id;
+            const body = req.body;
+            const filter = {new : ObjectId(id)};
+            const updatedDoc = {
+                $set : {
+                    ...body,
+                }
+            }
+            const result = await workCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
+
         // post a blog
         app.post("/addBlog", async (req, res) => {
             const blogData = req.body;
@@ -67,6 +89,28 @@ async function run() {
             res.send(result);
         })
 
+        // get single blog info
+        app.get("/allBlog/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await blogCollection.findOne(query);
+            res.send(result);
+        })
+
+        // edit a single blog
+        app.patch("allBlog/:id", async(req, res) => {
+            const id = req.params.id;
+            const body = req.body;
+            const filter = {new : ObjectId(id)};
+            const updatedDoc = {
+                $set : {
+                    ...body,
+                }
+            }
+            const result = await blogCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
+
         // post a job circular
         app.post("/addJobCircular", async (req, res) => {
             const jobData = req.body;
@@ -82,10 +126,31 @@ async function run() {
             res.send(result);
         })
 
-        // view recent job posts 
-        
+        // view recent job circulars 
         app.get("/allJobCircular", async (req, res) => {
             const result = await availableJobCollection.find().toArray();
+            res.send(result);
+        })
+
+        // get single job circular
+        app.get("/allJobCircular/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await availableJobCollection.findOne(query);
+            res.send(result);
+        })
+
+        // edit a single job circular
+        app.patch("allJobCircular/:id", async(req, res) => {
+            const id = req.params.id;
+            const body = req.body;
+            const filter = {new : ObjectId(id)};
+            const updatedDoc = {
+                $set : {
+                    ...body,
+                }
+            }
+            const result = await workCollection.updateOne(filter, updatedDoc);
             res.send(result);
         })
 
@@ -99,7 +164,7 @@ async function run() {
         // view job application
         app.get("/viewJobApplication", async (req, res) => {
             const result = await applicantCollection.find().toArray();
-            res.send(result); 
+            res.send(result);
         })
 
         await client.db("admin").command({ ping: 1 });

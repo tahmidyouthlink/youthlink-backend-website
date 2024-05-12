@@ -55,12 +55,12 @@ async function run() {
         })
 
         // edit a single work
-        app.patch("allWork/:id", async(req, res) => {
+        app.patch("allWork/:id", async (req, res) => {
             const id = req.params.id;
             const body = req.body;
-            const filter = {new : ObjectId(id)};
+            const filter = { new: ObjectId(id) };
             const updatedDoc = {
-                $set : {
+                $set: {
                     ...body,
                 }
             }
@@ -98,12 +98,12 @@ async function run() {
         })
 
         // edit a single blog
-        app.patch("allBlog/:id", async(req, res) => {
+        app.patch("allBlog/:id", async (req, res) => {
             const id = req.params.id;
             const body = req.body;
-            const filter = {new : ObjectId(id)};
+            const filter = { new: ObjectId(id) };
             const updatedDoc = {
-                $set : {
+                $set: {
                     ...body,
                 }
             }
@@ -141,12 +141,12 @@ async function run() {
         })
 
         // edit a single job circular
-        app.patch("allJobCircular/:id", async(req, res) => {
+        app.patch("allJobCircular/:id", async (req, res) => {
             const id = req.params.id;
             const body = req.body;
-            const filter = {new : ObjectId(id)};
+            const filter = { new: ObjectId(id) };
             const updatedDoc = {
-                $set : {
+                $set: {
                     ...body,
                 }
             }

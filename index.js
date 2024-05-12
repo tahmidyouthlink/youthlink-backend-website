@@ -140,8 +140,6 @@ async function run() {
             res.send(result);
         })
 
-
-        
         // edit a single job circular
         app.patch("allJobCircular/:id", async (req, res) => {
             const id = req.params.id;

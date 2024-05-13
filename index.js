@@ -70,8 +70,8 @@ async function run() {
 
         // post a blog
         app.post("/addBlog", async (req, res) => {
-            const blogData = req.body;
             const result = await blogCollection.insertOne(blogData);
+            const blogData = req.body;
             res.send(result);
         })
 
@@ -97,7 +97,7 @@ async function run() {
             res.send(result);
         })
 
-        // edit a single blog
+        // edit a single blog page
         app.patch("allBlog/:id", async (req, res) => {
             const id = req.params.id;
             const body = req.body;

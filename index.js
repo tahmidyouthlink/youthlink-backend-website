@@ -20,10 +20,27 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+        const userCollection = client.db("youthLink").collection("users");
         const workCollection = client.db("youthLink").collection("works");
         const blogCollection = client.db("youthLink").collection("blogs");
         const availableJobCollection = client.db("youthLink").collection("availableJobs");
         const applicantCollection = client.db("youthLink").collection("applicants");
+
+        // post user information
+        app.post("/user", async (req, res) => {
+            const userData = req.body;
+            const result = await userCollection.insertOne(userData);
+            res.send(result);
+        })
+
+        // checks admin or user
+        app.get("/users/admin/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const findUser = await userCollection.findOne(query);
+            const isAdmin = findUser?.role === "admin";
+            res.send({ isAdmin });
+        });
 
         // post a work
         app.post("/addWork", async (req, res) => {
@@ -54,24 +71,43 @@ async function run() {
             res.send(result);
         })
 
-        // edit a single work
-        app.patch("allWork/:id", async (req, res) => {
+        //update a single work
+        app.put("/allWork/:id", async (req, res) => {
             const id = req.params.id;
-            const body = req.body;
-            const filter = { new: ObjectId(id) };
-            const updatedDoc = {
+            const work = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updateWork = {
                 $set: {
-                    ...body,
+                    ...work,
                 }
             }
-            const result = await workCollection.updateOne(filter, updatedDoc);
+            const result = await workCollection.updateOne(filter, updateWork);
+            res.send(result);
+        })
+
+        // checking work status
+        app.get("/checkedWork", async (req, res) => {
+            const result = await workCollection.find({ status: { $eq: "checked" } }).toArray();
+            res.send(result);
+        })
+
+        // pending to check work status
+        app.patch("/checkedWork/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: "checked",
+                },
+            };
+            const result = await workCollection.updateOne(filter, updateDoc);
             res.send(result);
         })
 
         // post a blog
         app.post("/addBlog", async (req, res) => {
-            const result = await blogCollection.insertOne(blogData);
             const blogData = req.body;
+            const result = await blogCollection.insertOne(blogData);
             res.send(result);
         })
 
@@ -97,17 +133,36 @@ async function run() {
             res.send(result);
         })
 
-        // edit a single blog page
-        app.patch("allBlog/:id", async (req, res) => {
+        //update a single blog
+        app.put("/allBlog/:id", async (req, res) => {
             const id = req.params.id;
-            const body = req.body;
-            const filter = { new: ObjectId(id) };
-            const updatedDoc = {
+            const work = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updateWork = {
                 $set: {
-                    ...body,
+                    ...work,
                 }
             }
-            const result = await blogCollection.updateOne(filter, updatedDoc);
+            const result = await blogCollection.updateOne(filter, updateWork);
+            res.send(result);
+        })
+
+        // checking blog status
+        app.get("/checkedBlog", async (req, res) => {
+            const result = await blogCollection.find({ status: { $eq: "checked" } }).toArray();
+            res.send(result);
+        })
+
+        // pending to check blog status
+        app.patch("/checkedBlog/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: "checked",
+                },
+            };
+            const result = await blogCollection.updateOne(filter, updateDoc);
             res.send(result);
         })
 
@@ -140,19 +195,39 @@ async function run() {
             res.send(result);
         })
 
-        // edit a single job circular
-        app.patch("allJobCircular/:id", async (req, res) => {
+        //update a single job circular
+        app.put("/allJobCircular/:id", async (req, res) => {
             const id = req.params.id;
-            const body = req.body;
-            const filter = { new: ObjectId(id) };
-            const updatedDoc = {
+            const work = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updateWork = {
                 $set: {
-                    ...body,
+                    ...work,
                 }
             }
-            const result = await workCollection.updateOne(filter, updatedDoc);
+            const result = await availableJobCollection.updateOne(filter, updateWork);
             res.send(result);
         })
+
+        // checking job circular status
+        app.get("/checkedJobCircular", async (req, res) => {
+            const result = await availableJobCollection.find({ status: { $eq: "checked" } }).toArray();
+            res.send(result);
+        })
+
+        // pending to check job circular status
+        app.patch("/checkedJobCircular/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: "checked",
+                },
+            };
+            const result = await availableJobCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
 
         // applying a job
         app.post("/applyInJob", async (req, res) => {

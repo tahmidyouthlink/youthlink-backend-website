@@ -24,7 +24,29 @@ async function run() {
         const workCollection = client.db("youthLink").collection("works");
         const blogCollection = client.db("youthLink").collection("blogs");
         const availableJobCollection = client.db("youthLink").collection("availableJobs");
+        const skillsCollection = client.db("youthLink").collection("skills");
         const applicantCollection = client.db("youthLink").collection("applicants");
+
+        // searching skills
+        app.get("/allSkills/:name", async (req, res) => {
+            try {
+                const name = req.params.name;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedName = escapeRegExp(name);
+                const regex = new RegExp(escapedName, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await skillsCollection.find({ allSkills: { $regex: regex } }, { projection: { allSkills: 1 } }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
 
         // post user information
         app.post("/user", async (req, res) => {

@@ -113,6 +113,12 @@ async function run() {
             res.send(result);
         })
 
+        // under review work status
+        app.get("/reviewWork", async (req, res) => {
+            const result = await workCollection.find({ status: { $eq: "pending" } }).toArray();
+            res.send(result);
+        })
+
         // pending to check work status
         app.patch("/checkedWork/:id", async (req, res) => {
             const id = req.params.id;
@@ -175,6 +181,12 @@ async function run() {
             res.send(result);
         })
 
+        // under review blog status
+        app.get("/reviewBlog", async (req, res) => {
+            const result = await blogCollection.find({ status: { $eq: "pending" } }).toArray();
+            res.send(result);
+        })
+
         // pending to check blog status
         app.patch("/checkedBlog/:id", async (req, res) => {
             const id = req.params.id;
@@ -234,6 +246,12 @@ async function run() {
         // checking job circular status
         app.get("/checkedJobCircular", async (req, res) => {
             const result = await availableJobCollection.find({ status: { $eq: "checked" } }).toArray();
+            res.send(result);
+        })
+
+        // under review job circular status
+        app.get("/reviewJobCircular", async (req, res) => {
+            const result = await availableJobCollection.find({ status: { $eq: "pending" } }).toArray();
             res.send(result);
         })
 

@@ -25,6 +25,8 @@ async function run() {
         const blogCollection = client.db("youthLink").collection("blogs");
         const availableJobCollection = client.db("youthLink").collection("availableJobs");
         const skillsCollection = client.db("youthLink").collection("skills");
+        const workKeywordCollection = client.db("youthLink").collection("workKeywords");
+        const blogKeywordCollection = client.db("youthLink").collection("blogKeywords");
         const applicantCollection = client.db("youthLink").collection("applicants");
 
         // searching skills
@@ -41,6 +43,48 @@ async function run() {
                 const regex = new RegExp(escapedName, 'i'); // Creating a regex with 'i' flag for case-insensitive search
 
                 const result = await skillsCollection.find({ allSkills: { $regex: regex } }, { projection: { allSkills: 1 } }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+        // searching work keyword
+        app.get("/workKeywords/:keyword", async (req, res) => {
+            try {
+                const keyword = req.params.keyword;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedKeyword = escapeRegExp(keyword);
+                const regex = new RegExp(escapedKeyword, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await workKeywordCollection.find({ workKeywords: { $regex: regex } }, { projection: { workKeywords: 1 } }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+        // searching blog keyword
+        app.get("/blogKeywords/:keyword", async (req, res) => {
+            try {
+                const keyword = req.params.keyword;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedKeyword = escapeRegExp(keyword);
+                const regex = new RegExp(escapedKeyword, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await blogKeywordCollection.find({ blogKeywords: { $regex: regex } }, { projection: { blogKeywords: 1 } }).toArray();
                 res.send(result);
             } catch (err) {
                 console.log(err);

@@ -189,6 +189,35 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/blogTitle/:keywords", async (req, res) => {
+            try {
+                const keywordsJSON = req.params.keywords;
+                const keywords = JSON.parse(decodeURIComponent(keywordsJSON));
+
+                // Aggregation pipeline to match keywords and project only titles
+                const matchedKeywords = await blogCollection.aggregate([
+                    { $unwind: "$keyword" }, // Split the keywords array into separate documents
+                    {
+                        $match: {
+                            "keyword.label": { $in: keywords.map(kw => kw.label) }, // Match labels
+                            "keyword.value": { $in: keywords.map(kw => kw.value) } // Match values
+                        }
+                    },
+                    { $group: { _id: "$_id", titles: { $addToSet: "$title" } } } // Group by _id and collect unique titles
+                ]).toArray();
+
+                // Extract titles from the matched documents
+                const titles = matchedKeywords.flatMap(item => item.titles);
+
+                res.json({
+                    data: titles
+                });
+            } catch (err) {
+                console.error(err);
+                res.status(500).json({ message: 'Server Error' });
+            }
+        });
+
         // delete single blog
         app.delete("/deleteBlog/:id", async (req, res) => {
             const id = req.params.id;

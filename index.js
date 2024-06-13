@@ -27,6 +27,7 @@ async function run() {
         const skillsCollection = client.db("youthLink").collection("skills");
         const workKeywordCollection = client.db("youthLink").collection("workKeywords");
         const blogKeywordCollection = client.db("youthLink").collection("blogKeywords");
+        const workCategoryCollection = client.db("youthLink").collection("workCategory");
         const applicantCollection = client.db("youthLink").collection("applicants");
 
         // searching skills
@@ -64,6 +65,28 @@ async function run() {
                 const regex = new RegExp(escapedKeyword, 'i'); // Creating a regex with 'i' flag for case-insensitive search
 
                 const result = await workKeywordCollection.find({ workKeywords: { $regex: regex } }, { projection: { workKeywords: 1 } }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+        // searching work category
+        app.get("/workCategory/:category", async (req, res) => {
+            try {
+                const category = req.params.category;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedCategory = escapeRegExp(category);
+                const regex = new RegExp(escapedCategory, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await workCategoryCollection.find({ workCategory: { $regex: regex } }, { projection: { workCategory: 1 } }).toArray();
+                console.log(result);
                 res.send(result);
             } catch (err) {
                 console.log(err);

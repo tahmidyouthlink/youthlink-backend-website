@@ -28,6 +28,8 @@ async function run() {
         const workKeywordCollection = client.db("youthLink").collection("workKeywords");
         const blogKeywordCollection = client.db("youthLink").collection("blogKeywords");
         const workCategoryCollection = client.db("youthLink").collection("workCategory");
+        const blogCategoryCollection = client.db("youthLink").collection("blogCategory");
+        const careerCategoryCollection = client.db("youthLink").collection("careerCategory");
         const applicantCollection = client.db("youthLink").collection("applicants");
 
         // searching skills
@@ -86,6 +88,50 @@ async function run() {
                 const regex = new RegExp(escapedCategory, 'i'); // Creating a regex with 'i' flag for case-insensitive search
 
                 const result = await workCategoryCollection.find({ workCategory: { $regex: regex } }, { projection: { workCategory: 1 } }).toArray();
+                console.log(result);
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+        // searching blog category
+        app.get("/blogCategory/:category", async (req, res) => {
+            try {
+                const category = req.params.category;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedCategory = escapeRegExp(category);
+                const regex = new RegExp(escapedCategory, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await blogCategoryCollection.find({ blogCategory: { $regex: regex } }, { projection: { blogCategory: 1 } }).toArray();
+                console.log(result);
+                res.send(result);
+            } catch (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+        // searching career category
+        app.get("/careerCategory/:category", async (req, res) => {
+            try {
+                const category = req.params.category;
+
+                // Function to escape special characters in a string for use in a regular expression
+                function escapeRegExp(string) {
+                    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                }
+
+                const escapedCategory = escapeRegExp(category);
+                const regex = new RegExp(escapedCategory, 'i'); // Creating a regex with 'i' flag for case-insensitive search
+
+                const result = await careerCategoryCollection.find({ careerCategory: { $regex: regex } }, { projection: { careerCategory: 1 } }).toArray();
                 console.log(result);
                 res.send(result);
             } catch (err) {

@@ -22,13 +22,13 @@ async function run() {
   try {
     const userCollection = client.db("youthLink").collection("users");
     const workCollection = client.db("youthLink").collection("works");
+    const workKeywordCollection = client.db("youthLink").collection("workKeywords");
+    const workCategoryCollection = client.db("youthLink").collection("workCategory");
     const blogCollection = client.db("youthLink").collection("blogs");
+    const blogKeywordCollection = client.db("youthLink").collection("blogKeywords");
+    const blogCategoryCollection = client.db("youthLink").collection("blogCategory");
     const availableJobCollection = client.db("youthLink").collection("availableJobs");
     const skillsCollection = client.db("youthLink").collection("skills");
-    const workKeywordCollection = client.db("youthLink").collection("workKeywords");
-    const blogKeywordCollection = client.db("youthLink").collection("blogKeywords");
-    const workCategoryCollection = client.db("youthLink").collection("workCategory");
-    const blogCategoryCollection = client.db("youthLink").collection("blogCategory");
     const careerCategoryCollection = client.db("youthLink").collection("careerCategory");
     const applicantCollection = client.db("youthLink").collection("applicants");
 
@@ -53,6 +53,39 @@ async function run() {
       }
     });
 
+    // Route to get all work keywords
+    app.get("/allWorkKeywords", async (req, res) => {
+      try {
+        const result = await workKeywordCollection.find().toArray();
+        res.send(result);
+      } catch (err) {
+        res.status(500).send('Error retrieving work keywords');
+      }
+    });
+
+    // POST route to publish new work keywords
+    app.post("/publishWorkKeywords", async (req, res) => {
+      const { keywords } = req.body;
+
+      // Get current keywords from the database
+      const existingKeywords = await workKeywordCollection.find().toArray();
+      const existingKeywordNames = existingKeywords.map(item => item.workKeywords);
+
+      // Filter to include only new keywords not present in the database
+      const newKeywords = keywords.filter(keyword => !existingKeywordNames.includes(keyword));
+
+      if (newKeywords.length > 0) {
+        // Prepare new keyword objects with the same structure as `allBlogKeywords`
+        const newKeywordDocs = newKeywords.map(keyword => ({ workKeywords: keyword }));
+
+        // Insert new keyword objects to the collection
+        const result = await workKeywordCollection.insertMany(newKeywordDocs);
+        res.send({ message: 'New keywords added', result });
+      } else {
+        res.send({ message: 'No new keywords to add' });
+      }
+    });
+
     // searching work keyword
     app.get("/workKeywords/:keyword", async (req, res) => {
       try {
@@ -71,6 +104,39 @@ async function run() {
       } catch (err) {
         console.log(err);
         res.status(500).send({ message: 'Internal Server Error' });
+      }
+    });
+
+    // Route to get all work categories
+    app.get("/allWorkCategories", async (req, res) => {
+      try {
+        const result = await workCategoryCollection.find().toArray();
+        res.send(result);
+      } catch (err) {
+        res.status(500).send('Error retrieving work categories');
+      }
+    });
+
+    // POST route to publish new work categories
+    app.post("/publishWorkCategories", async (req, res) => {
+      const { categories } = req.body;
+
+      // Get current work categories from the database
+      const existingCategories = await workCategoryCollection.find().toArray();
+      const existingCategoryNames = existingCategories.map(item => item.workCategory);
+
+      // Filter to include only new work categories not present in the database
+      const newCategories = categories.filter(category => !existingCategoryNames.includes(category));
+
+      if (newCategories.length > 0) {
+        // Prepare new work categories objects with the same structure as `allWorkCategories`
+        const newWorkCategoryDocs = newCategories.map(category => ({ workCategory: category }));
+
+        // Insert new work categories objects to the collection
+        const result = await workCategoryCollection.insertMany(newWorkCategoryDocs);
+        res.send({ message: 'New keywords added', result });
+      } else {
+        res.send({ message: 'No new keywords to add' });
       }
     });
 
@@ -515,7 +581,73 @@ async function run() {
     app.get("/viewJobApplication", async (req, res) => {
       const result = await applicantCollection.find().toArray();
       res.send(result);
-    })
+    });
+
+    // Route to get all job categories
+    app.get("/allJobCategories", async (req, res) => {
+      try {
+        const result = await careerCategoryCollection.find().toArray();
+        res.send(result);
+      } catch (err) {
+        res.status(500).send('Error retrieving job categories');
+      }
+    });
+
+    // POST route to publish new job categories
+    app.post("/publishJobCategories", async (req, res) => {
+      const { categories } = req.body;
+
+      // Get current work categories from the database
+      const existingCategories = await careerCategoryCollection.find().toArray();
+      const existingCategoryNames = existingCategories.map(item => item.careerCategory);
+
+      // Filter to include only new work categories not present in the database
+      const newCategories = categories.filter(category => !existingCategoryNames.includes(category));
+
+      if (newCategories.length > 0) {
+        // Prepare new work categories objects with the same structure as `allJobCategories`
+        const newJobCategoryDocs = newCategories.map(category => ({ careerCategory: category }));
+
+        // Insert new work categories objects to the collection
+        const result = await careerCategoryCollection.insertMany(newJobCategoryDocs);
+        res.send({ message: 'New categories added', result });
+      } else {
+        res.send({ message: 'No new categories to add' });
+      }
+    });
+
+    // Route to get all job skills
+    app.get("/allJobSkills", async (req, res) => {
+      try {
+        const result = await skillsCollection.find().toArray();
+        res.send(result);
+      } catch (err) {
+        res.status(500).send('Error retrieving job skills');
+      }
+    });
+
+    // POST route to publish new job skills
+    app.post("/publishJobSkills", async (req, res) => {
+      const { skills } = req.body;
+
+      // Get current job skills from the database
+      const existingSkills = await skillsCollection.find().toArray();
+      const existingSkillNames = existingSkills.map(item => item.allSkills);
+
+      // Filter to include only new job skills not present in the database
+      const newSkills = skills.filter(skill => !existingSkillNames.includes(skill));
+
+      if (newSkills.length > 0) {
+        // Prepare new job skills objects with the same structure as `allJobSkills`
+        const newJobSkillDocs = newSkills.map(skill => ({ allSkills: skill }));
+
+        // Insert new new job skills objects to the collection
+        const result = await skillsCollection.insertMany(newJobSkillDocs);
+        res.send({ message: 'New skills added', result });
+      } else {
+        res.send({ message: 'No new skills to add' });
+      }
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");

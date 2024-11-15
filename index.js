@@ -418,34 +418,34 @@ async function run() {
     // });
 
     // Getting just matched titles - 2 
-    app.get("/blogTitle/:keywords", async (req, res) => {
-      try {
-        const keywordsJSON = req.params.keywords;
-        const keywords = JSON.parse(decodeURIComponent(keywordsJSON));
+    // app.get("/blogTitle/:keywords", async (req, res) => {
+    //   try {
+    //     const keywordsJSON = req.params.keywords;
+    //     const keywords = JSON.parse(decodeURIComponent(keywordsJSON));
 
-        const matchedBlogs = await blogCollection.aggregate([
-          {
-            $match: {
-              "keyword": {
-                $all: keywords.map(kw => ({ $elemMatch: { label: kw.label, value: kw.value } }))
-              }
-            }
-          },
-          {
-            $project: { title: 1 }
-          }
-        ]).toArray();
+    //     const matchedBlogs = await blogCollection.aggregate([
+    //       {
+    //         $match: {
+    //           "keyword": {
+    //             $all: keywords.map(kw => ({ $elemMatch: { label: kw.label, value: kw.value } }))
+    //           }
+    //         }
+    //       },
+    //       {
+    //         $project: { title: 1 }
+    //       }
+    //     ]).toArray();
 
-        const titles = matchedBlogs.map(blog => blog.title);
+    //     const titles = matchedBlogs.map(blog => blog.title);
 
-        res.json({
-          data: titles
-        });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
-      }
-    });
+    //     res.json({
+    //       data: titles
+    //     });
+    //   } catch (err) {
+    //     console.error(err);
+    //     res.status(500).json({ message: 'Server Error' });
+    //   }
+    // });
 
     // delete single blog
     app.delete("/deleteBlog/:id", async (req, res) => {

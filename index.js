@@ -31,6 +31,7 @@ async function run() {
     const skillsCollection = client.db("youthLink").collection("skills");
     const careerCategoryCollection = client.db("youthLink").collection("careerCategory");
     const applicantCollection = client.db("youthLink").collection("applicants");
+    const marketingContentCollection = client.db("youthLink").collection("marketing-content");
 
     // searching skills
     app.get("/allSkills/:name", async (req, res) => {
@@ -648,6 +649,30 @@ async function run() {
         res.send({ message: 'No new skills to add' });
       }
     });
+
+    // Route to get all marketing content
+    app.get("/marketingContentList", async (req, res) => {
+      try {
+        const result = await marketingContentCollection.find().toArray();
+        res.send(result);
+      } catch (err) {
+        res.status(500).send('Error retrieving marketing content');
+      }
+    });
+
+    //update a marketing content
+    app.put("/editMarketingContent/:id", async (req, res) => {
+      const id = req.params.id;
+      const content = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateContent = {
+        $set: {
+          ...content,
+        }
+      }
+      const result = await marketingContentCollection.updateOne(filter, updateContent);
+      res.send(result);
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");

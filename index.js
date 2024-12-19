@@ -660,6 +660,20 @@ async function run() {
       }
     });
 
+    app.post("/addMarketingContent", async (req, res) => {
+      const contentData = req.body;
+      const result = await marketingContentCollection.insertOne(contentData);
+      res.send(result);
+    });
+
+    // delete a job circular
+    app.delete("/deleteMarketingContent/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await marketingContentCollection.deleteOne(query);
+      res.send(result);
+    });
+
     //update a marketing content
     app.put("/editMarketingContent/:id", async (req, res) => {
       const id = req.params.id;

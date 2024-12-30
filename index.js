@@ -660,6 +660,14 @@ async function run() {
       }
     });
 
+    // get single marketing content
+    app.get("/singleMarketingContent/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await marketingContentCollection.findOne(query);
+      res.send(result);
+    });
+
     app.post("/addMarketingContent", async (req, res) => {
       const contentData = req.body;
       const result = await marketingContentCollection.insertOne(contentData);
@@ -686,7 +694,7 @@ async function run() {
       }
       const result = await marketingContentCollection.updateOne(filter, updateContent);
       res.send(result);
-    })
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
